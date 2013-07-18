@@ -6,6 +6,7 @@ from numbers import Number
 
 # Import salt libs
 import salt.utils
+import salt.exceptions
 
 class NestDisplay(object):
     '''
@@ -18,6 +19,9 @@ class NestDisplay(object):
         '''
         Recursively iterate down through data structures to determine output
         '''
+        if isinstance(ret, Exception):
+            ret = str(ret)
+
         if ret is None or ret is True or ret is False:
             out += '{0}{1}{2}{3}{4}\n'.format(
                     ' ' * indent,
@@ -68,6 +72,9 @@ class NestDisplay(object):
                         key,
                         self.colors['ENDC'])
                 out = self.display(val, indent + 4, '', out)
+        else:
+            err = 'Unhandled or unexpected type(ret) -> %s' % type(ret)
+            raise salt.exceptions.Exception(err)
         return out
 
 def output(ret):
